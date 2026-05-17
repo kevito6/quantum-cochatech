@@ -1,0 +1,614 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Inventario de Vehículos{% endblock %}
+
+{% block body %}
+<style>
+    :root {
+        --brand: #1a56db;
+        --brand-light: #e8f0fe;
+        --surface: #ffffff;
+        --bg: #f4f6fb;
+        --border: #e2e8f0;
+        --text: #1e293b;
+        --muted: #64748b;
+        --danger: #ef4444;
+        --success: #22c55e;
+        --warning: #f59e0b;
+        --radius: 10px;
+    }
+
+    .page-inventario {
+        background: var(--bg);
+        min-height: 100vh;
+        font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+
+    /* ── Top bar ── */
+    .inv-topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 28px 10px;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .inv-topbar h1 {
+        font-size: 1.35rem;
+        font-weight: 700;
+        color: var(--text);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .inv-topbar h1 svg { color: var(--brand); }
+
+    .inv-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        cursor: pointer;
+        border: none;
+        transition: background .15s, box-shadow .15s;
+    }
+    .btn-primary { background: var(--brand); color: #fff; }
+    .btn-primary:hover { background: #1648c0; box-shadow: 0 2px 8px rgba(26,86,219,.3); }
+    .btn-outline { background: #fff; color: var(--text); border: 1px solid var(--border); }
+    .btn-outline:hover { background: #f1f5f9; }
+
+    /* ── KPI cards ── */
+    .inv-kpis {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 14px;
+        padding: 0 28px 18px;
+    }
+    .kpi-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        padding: 16px 18px;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        box-shadow: 0 1px 3px rgba(0,0,0,.04);
+    }
+    .kpi-label { font-size: 0.75rem; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
+    .kpi-value { font-size: 1.6rem; font-weight: 800; color: var(--text); line-height: 1; }
+    .kpi-sub   { font-size: 0.78rem; color: var(--muted); }
+    .kpi-dot   { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+
+    /* ── View toggle ── */
+    .inv-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 28px 12px;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .inv-filters { display: flex; gap: 8px; flex-wrap: wrap; }
+    .search-box { position: relative; }
+    .search-box input {
+        padding: 8px 12px 8px 34px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.875rem;
+        background: #fff;
+        color: var(--text);
+        outline: none;
+        min-width: 200px;
+        transition: border-color .15s;
+    }
+    .search-box input:focus { border-color: var(--brand); }
+    .search-box svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+    .filter-select {
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.875rem;
+        background: #fff;
+        color: var(--text);
+        outline: none;
+        cursor: pointer;
+    }
+    .view-toggle { display: flex; gap: 4px; }
+    .view-btn {
+        padding: 7px 9px;
+        border: 1px solid var(--border);
+        border-radius: 7px;
+        background: #fff;
+        cursor: pointer;
+        color: var(--muted);
+        display: flex;
+        align-items: center;
+        transition: background .12s, color .12s;
+    }
+    .view-btn.active { background: var(--brand); color: #fff; border-color: var(--brand); }
+
+    /* ── Grid de tarjetas ── */
+    .inv-content { padding: 0 28px 28px; }
+
+    .vehicle-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+        gap: 18px;
+    }
+    .vehicle-grid.list-mode { grid-template-columns: 1fr; }
+
+    .v-card {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 1px 4px rgba(0,0,0,.05);
+        transition: box-shadow .18s, transform .18s;
+    }
+    .v-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.1); transform: translateY(-2px); }
+
+    .v-card-img {
+        width: 100%;
+        height: 160px;
+        object-fit: cover;
+        background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: #94a3b8;
+        position: relative;
+    }
+    .v-card-img .v-status {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+    .v-card-body { padding: 14px 16px; }
+    .v-card-title { font-size: 1rem; font-weight: 700; color: var(--text); margin-bottom: 2px; }
+    .v-card-sub { font-size: 0.8rem; color: var(--muted); margin-bottom: 10px; }
+    .v-card-specs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+    .spec-chip {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 0.75rem;
+        color: var(--muted);
+        background: #f8fafc;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 3px 8px;
+    }
+    .v-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+    }
+    .v-price { font-size: 1.15rem; font-weight: 800; color: var(--brand); }
+    .v-card-actions { display: flex; gap: 6px; }
+    .icon-btn {
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 6px;
+        padding: 5px 7px;
+        cursor: pointer;
+        color: var(--muted);
+        display: inline-flex;
+        align-items: center;
+        transition: background .12s, color .12s;
+    }
+    .icon-btn:hover { background: var(--brand-light); color: var(--brand); border-color: var(--brand); }
+    .icon-btn.danger:hover { background: #fef2f2; color: var(--danger); border-color: #fecaca; }
+
+    /* badges */
+    .badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 3px 9px;
+        border-radius: 20px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    .badge-green  { background: #dcfce7; color: #15803d; }
+    .badge-yellow { background: #fef9c3; color: #92400e; }
+    .badge-red    { background: #fee2e2; color: #b91c1c; }
+    .badge-blue   { background: #dbeafe; color: #1d4ed8; }
+    .badge-gray   { background: #f1f5f9; color: var(--muted); }
+
+    /* list mode card */
+    .vehicle-grid.list-mode .v-card {
+        display: flex;
+        flex-direction: row;
+        align-items: stretch;
+    }
+    .vehicle-grid.list-mode .v-card-img {
+        width: 180px;
+        height: auto;
+        min-height: 110px;
+        flex-shrink: 0;
+        border-radius: 0;
+    }
+    .vehicle-grid.list-mode .v-card-body {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+    .vehicle-grid.list-mode .v-card-info { flex: 1; min-width: 160px; }
+    .vehicle-grid.list-mode .v-card-specs { margin-bottom: 0; }
+    .vehicle-grid.list-mode .v-card-footer { padding: 0; border: none; }
+
+    /* Modal */
+    .modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(15,23,42,.45);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity .2s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+        background: #fff;
+        border-radius: 14px;
+        width: 100%;
+        max-width: 560px;
+        padding: 28px;
+        box-shadow: 0 20px 60px rgba(0,0,0,.18);
+        transform: translateY(16px);
+        transition: transform .2s;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .modal-header h2 { font-size: 1.1rem; font-weight: 700; color: var(--text); margin: 0; }
+    .modal-close { background: none; border: none; cursor: pointer; color: var(--muted); padding: 4px; border-radius: 6px; }
+    .modal-close:hover { background: #f1f5f9; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label { font-size: 0.8rem; font-weight: 600; color: var(--muted); }
+    .form-group input, .form-group select, .form-group textarea {
+        padding: 9px 12px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        font-size: 0.875rem;
+        color: var(--text);
+        outline: none;
+        transition: border-color .15s;
+        font-family: inherit;
+        resize: vertical;
+    }
+    .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--brand); }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }
+
+    /* empty state */
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--muted);
+        display: none;
+    }
+    .empty-state svg { margin-bottom: 12px; color: #cbd5e1; }
+    .empty-state p { font-size: 0.95rem; }
+</style>
+
+<div class="page-inventario">
+
+    <!-- Top bar -->
+    <div class="inv-topbar">
+        <h1>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            Inventario de Vehículos
+        </h1>
+        <div class="inv-actions">
+            <button class="btn btn-outline" onclick="exportarInventario()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Exportar
+            </button>
+            <button class="btn btn-primary" onclick="abrirModal()">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                Agregar Vehículo
+            </button>
+        </div>
+    </div>
+
+    <!-- KPIs -->
+    <div class="inv-kpis">
+        <div class="kpi-card">
+            <span class="kpi-label">Total en stock</span>
+            <span class="kpi-value">24</span>
+            <span class="kpi-sub">vehículos registrados</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">Disponibles</span>
+            <span class="kpi-value" style="color:#15803d">18</span>
+            <span class="kpi-sub"><span class="kpi-dot" style="background:#22c55e"></span>listos para venta</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">Reservados</span>
+            <span class="kpi-value" style="color:#d97706">4</span>
+            <span class="kpi-sub"><span class="kpi-dot" style="background:#f59e0b"></span>con seña</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">Vendidos (mes)</span>
+            <span class="kpi-value" style="color:#1a56db">12</span>
+            <span class="kpi-sub">en mayo 2026</span>
+        </div>
+        <div class="kpi-card">
+            <span class="kpi-label">Valor total stock</span>
+            <span class="kpi-value" style="font-size:1.2rem">$2.4M</span>
+            <span class="kpi-sub">USD estimado</span>
+        </div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="inv-toolbar">
+        <div class="inv-filters">
+            <div class="search-box">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="busquedaVehiculo" placeholder="Buscar vehículo..." oninput="filtrarVehiculos()">
+            </div>
+            <select class="filter-select" id="filtroMarca" onchange="filtrarVehiculos()">
+                <option value="">Todas las marcas</option>
+                <option>Quantum</option>
+                <option>Quantumundai</option>
+                <option>Chevrolet</option>
+                <option>Kia</option>
+                <option>Ford</option>
+                <option>Nissan</option>
+            </select>
+            <select class="filter-select" id="filtroEstado" onchange="filtrarVehiculos()">
+                <option value="">Todos los estados</option>
+                <option>Disponible</option>
+                <option>Reservado</option>
+                <option>Vendido</option>
+            </select>
+            <select class="filter-select" id="filtroAnio" onchange="filtrarVehiculos()">
+                <option value="">Todos los años</option>
+                <option>2026</option>
+                <option>2025</option>
+                <option>2024</option>
+                <option>2023</option>
+            </select>
+        </div>
+        <div class="view-toggle">
+            <button class="view-btn active" id="btnGrid" onclick="setView('grid')" title="Vista grilla">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+            </button>
+            <button class="view-btn" id="btnList" onclick="setView('list')" title="Vista lista">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Grid vehículos -->
+    <div class="inv-content">
+        <div class="vehicle-grid" id="vehicleGrid">
+
+            {% set vehiculos = [
+                {id:1, marca:'Quantum', modelo:'Nexus Plus', anio:2025, km:'12,500', color:'Blanco Perlado', precio:'$28,500', estado:'Disponible', combustible:'Diésel', trans:'Automático', emoji:'🚙'},
+                {id:2, marca:'Quantumundai', modelo:'E-4', anio:2024, km:'0', color:'Gris Metálico', precio:'$32,000', estado:'Disponible', combustible:'Gasolina', trans:'Automático', emoji:'🚗'},
+                {id:6, marca:'Quantum', modelo:'Equte', anio:2026, km:'0', color:'Blanco Nacarado', precio:'$22,400', estado:'Vendido', combustible:'Gasolina', trans:'CVT', emoji:'🚗'},
+                {id:7, marca:'Quantum', modelo:'Ion Pro', anio:2023, km:'35,600', color:'Plata Lunar', precio:'$65,000', estado:'Disponible', combustible:'Diésel', trans:'Automático', emoji:'🚙'},
+                {id:8, marca:'Quantum', modelo:'Ion', anio:2025, km:'5,800', color:'Azul Estelar', precio:'$38,200', estado:'Reservado', combustible:'Gasolina', trans:'Automático', emoji:'🚗'},
+            ] %}
+
+            {% for v in vehiculos %}
+            {% set badgeClass = {'Disponible':'badge-green','Reservado':'badge-yellow','Vendido':'badge-gray'}[v.estado] ?? 'badge-gray' %}
+            <div class="v-card"
+                 data-marca="{{ v.marca }}"
+                 data-estado="{{ v.estado }}"
+                 data-anio="{{ v.anio }}"
+                 data-busca="{{ (v.marca ~ ' ' ~ v.modelo ~ ' ' ~ v.anio)|lower }}">
+                <div class="v-card-img">
+                    <span style="font-size:3.5rem">{{ v.emoji }}</span>
+                    <div class="v-status">
+                        <span class="badge {{ badgeClass }}">{{ v.estado }}</span>
+                    </div>
+                </div>
+                <div class="v-card-body">
+                    <div class="v-card-info" style="flex:1">
+                        <div class="v-card-title">{{ v.marca }} {{ v.modelo }}</div>
+                        <div class="v-card-sub">{{ v.anio }} · {{ v.color }}</div>
+                        <div class="v-card-specs">
+                            <span class="spec-chip">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 4v6l4 2"/></svg>
+                                {{ v.km }} km
+                            </span>
+                            <span class="spec-chip">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 22V8l9-6 9 6v14H3z"/></svg>
+                                {{ v.combustible }}
+                            </span>
+                            <span class="spec-chip">
+                                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                                {{ v.trans }}
+                            </span>
+                        </div>
+                    </div>
+                    <div class="v-card-footer">
+                        <span class="v-price">{{ v.precio }}</span>
+                        <div class="v-card-actions">
+                            <button class="icon-btn" title="Ver detalle" onclick="verVehiculo({{ v.id }})">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            </button>
+                            <button class="icon-btn" title="Editar" onclick="editarVehiculo({{ v.id }})">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                            </button>
+                            <button class="icon-btn danger" title="Eliminar">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M9 6V4h6v2"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="empty-state" id="emptyState">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            <p>No se encontraron vehículos con esos filtros.</p>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Agregar Vehículo -->
+<div class="modal-overlay" id="modalVehiculo" onclick="cerrarModalFuera(event)">
+    <div class="modal">
+        <div class="modal-header">
+            <h2>Agregar Vehículo</h2>
+            <button class="modal-close" onclick="cerrarModal()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+        </div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Marca</label>
+                <select>
+                    <option>Quantum Nexus Plus</option>
+                    <option>Quantum Equte</option>
+                    <option>Quantum E-4</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Modelo</label>
+                <input type="text" placeholder="Ej: Hilux SRX">
+            </div>
+            <div class="form-group">
+                <label>Año</label>
+                <input type="number" placeholder="2025" min="2000" max="2030">
+            </div>
+            <div class="form-group">
+                <label>Color</label>
+                <input type="text" placeholder="Blanco Perlado">
+            </div>
+            <div class="form-group">
+                <label>Kilometraje</label>
+                <input type="number" placeholder="0">
+            </div>
+            <div class="form-group">
+                <label>Precio (USD)</label>
+                <input type="number" placeholder="25000">
+            </div>
+            <div class="form-group">
+                <label>Combustible</label>
+                <select>
+                    <option>Gasolina</option>
+                    <option>Diésel</option>
+                    <option>Híbrido</option>
+                    <option>Eléctrico</option>
+                    <option>GNV</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Transmisión</label>
+                <select>
+                    <option>Automático</option>
+                    <option>Manual</option>
+                    <option>CVT</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Estado</label>
+                <select>
+                    <option>Disponible</option>
+                    <option>Reservado</option>
+                    <option>Vendido</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>N° de placa</label>
+                <input type="text" placeholder="Ej: 1234-ABC">
+            </div>
+            <div class="form-group full">
+                <label>Descripción / Observaciones</label>
+                <textarea rows="3" placeholder="Detalles adicionales del vehículo..."></textarea>
+            </div>
+            <div class="form-group full">
+                <label>Fotos (URL o cargar)</label>
+                <input type="text" placeholder="https://... o seleccionar archivo">
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-outline" onclick="cerrarModal()">Cancelar</button>
+            <button class="btn btn-primary" onclick="guardarVehiculo()">Guardar Vehículo</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let vistaActual = 'grid';
+
+function setView(v) {
+    vistaActual = v;
+    const grid = document.getElementById('vehicleGrid');
+    document.getElementById('btnGrid').classList.toggle('active', v === 'grid');
+    document.getElementById('btnList').classList.toggle('active', v === 'list');
+    grid.classList.toggle('list-mode', v === 'list');
+}
+
+function filtrarVehiculos() {
+    const q = document.getElementById('busquedaVehiculo').value.toLowerCase();
+    const marca = document.getElementById('filtroMarca').value;
+    const estado = document.getElementById('filtroEstado').value;
+    const anio = document.getElementById('filtroAnio').value;
+    const cards = document.querySelectorAll('.v-card');
+    let visibles = 0;
+
+    cards.forEach(card => {
+        const ok = card.dataset.busca.includes(q)
+            && (marca === '' || card.dataset.marca === marca)
+            && (estado === '' || card.dataset.estado === estado)
+            && (anio === '' || card.dataset.anio === anio);
+        card.style.display = ok ? '' : 'none';
+        if (ok) visibles++;
+    });
+
+    document.getElementById('emptyState').style.display = visibles === 0 ? 'block' : 'none';
+}
+
+function abrirModal() {
+    document.getElementById('modalVehiculo').classList.add('open');
+}
+function cerrarModal() {
+    document.getElementById('modalVehiculo').classList.remove('open');
+}
+function cerrarModalFuera(e) {
+    if (e.target === document.getElementById('modalVehiculo')) cerrarModal();
+}
+function guardarVehiculo() {
+    cerrarModal();
+}
+
+function verVehiculo(id) {
+    window.location.href = '/?action=vehiculo_detalle&id=' + id;
+}
+function editarVehiculo(id) {
+    abrirModal();
+}
+function exportarInventario() {
+    alert('Exportando inventario...');
+}
+</script>
+{% endblock %}

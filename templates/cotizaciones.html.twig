@@ -1,0 +1,325 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Cotizaciones - AutoSales Pro{% endblock %}
+{% block page_title %}Cotizaciones{% endblock %}
+{% block page_subtitle %}Gestión de propuestas{% endblock %}
+
+{% block body %}
+<!-- Filtros y acciones -->
+<div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
+        <div class="flex items-center space-x-3">
+            <button class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg">
+                Todas (15)
+            </button>
+            <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50">
+                Pendientes (8)
+            </button>
+            <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50">
+                Aprobadas (5)
+            </button>
+            <button class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50">
+                Rechazadas (2)
+            </button>
+        </div>
+        
+        <button class="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-sm font-medium rounded-lg hover:from-blue-700 hover:to-blue-800 shadow-sm">
+            <i class="fas fa-plus mr-2"></i>
+            Nueva Cotización
+        </button>
+    </div>
+</div>
+
+<!-- Estadísticas -->
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-blue-500">
+        <p class="text-sm text-gray-600 mb-1">Total Cotizaciones</p>
+        <p class="text-2xl font-bold text-gray-900">15</p>
+        <p class="text-xs text-gray-500 mt-1">Este mes</p>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-amber-500">
+        <p class="text-sm text-gray-600 mb-1">Pendientes</p>
+        <p class="text-2xl font-bold text-gray-900">8</p>
+        <p class="text-xs text-amber-600 mt-1">Requieren seguimiento</p>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-green-500">
+        <p class="text-sm text-gray-600 mb-1">Tasa de Aprobación</p>
+        <p class="text-2xl font-bold text-gray-900">33%</p>
+        <p class="text-xs text-green-600 mt-1">5 de 15 aprobadas</p>
+    </div>
+    
+    <div class="bg-white rounded-lg shadow-sm p-5 border-l-4 border-purple-500">
+        <p class="text-sm text-gray-600 mb-1">Valor Total</p>
+        <p class="text-2xl font-bold text-gray-900">$425K</p>
+        <p class="text-xs text-gray-500 mt-1">En cotizaciones activas</p>
+    </div>
+</div>
+
+<!-- Lista de cotizaciones -->
+<div class="space-y-4">
+    <!-- Cotización 1 -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+        <div class="p-6">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex-1">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <h3 class="text-lg font-bold text-gray-900">Cotización #COT-2024-015</h3>
+                        <span class="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-semibold rounded-full">
+                            Pendiente
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-600">Cliente: <span class="font-medium text-gray-900">María González</span></p>
+                    <p class="text-xs text-gray-500 mt-1">Creada hace 2 horas</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-2xl font-bold text-blue-600">$29,200</p>
+                    <p class="text-xs text-gray-500 mt-1">Quantum E-4</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 pb-4 border-b border-gray-200">
+                <div>
+                    <p class="text-xs text-gray-500 mb-1">Vehículo</p>
+                    <p class="text-sm font-medium text-gray-900">Quantum E-4</p>
+                    <p class="text-xs text-gray-600">Sedán • Manual • 2024</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 mb-1">Financiamiento</p>
+                    <p class="text-sm font-medium text-gray-900">48 meses</p>
+                    <p class="text-xs text-gray-600">Enganche: $5,000 (17%)</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 mb-1">Mensualidad</p>
+                    <p class="text-sm font-medium text-green-600">$645/mes</p>
+                    <p class="text-xs text-gray-600">Tasa: 8.5% anual</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4 text-sm text-gray-600">
+                    <div class="flex items-center">
+                        <i class="fas fa-user-tie text-gray-400 mr-2"></i>
+                        <span>Asesor: Tú</span>
+                    </div>
+                    <div class="flex items-center">
+                        <i class="fas fa-calendar text-gray-400 mr-2"></i>
+                        <span>Válida hasta: 25/05/2024</span>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        Enviar
+                    </button>
+                    <button class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-edit mr-2"></i>
+                        Editar
+                    </button>
+                    <button class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Cotización 2 -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+        <div class="p-6">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex-1">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <h3 class="text-lg font-bold text-gray-900">Cotización #COT-2024-014</h3>
+                        <span class="px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full">
+                            <i class="fas fa-check-circle mr-1"></i>
+                            Aprobada
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-600">Cliente: <span class="font-medium text-gray-900">Ana Martínez</span></p>
+                    <p class="text-xs text-gray-500 mt-1">Aprobada hace 1 día</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-2xl font-bold text-green-600">$31,000</p>
+                    <p class="text-xs text-gray-500 mt-1">Quantum E-4</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 pb-4 border-b border-gray-200">
+                <div>
+                    <p class="text-xs text-gray-500 mb-1">Vehículo</p>
+                    <p class="text-sm font-medium text-gray-900">Quantum E-4</p>
+                    <p class="text-xs text-gray-600">SUV • Automático • 2024</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 mb-1">Financiamiento</p>
+                    <p class="text-sm font-medium text-gray-900">60 meses</p>
+                    <p class="text-xs text-gray-600">Enganche: $7,000 (23%)</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 mb-1">Mensualidad</p>
+                    <p class="text-sm font-medium text-green-600">$565/mes</p>
+                    <p class="text-xs text-gray-600">Tasa: 7.9% anual</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4 text-sm text-gray-600">
+                    <div class="flex items-center">
+                        <i class="fas fa-user-tie text-gray-400 mr-2"></i>
+                        <span>Asesor: Tú</span>
+                    </div>
+                    <div class="flex items-center text-green-600">
+                        <i class="fas fa-check-double text-green-500 mr-2"></i>
+                        <span>Cliente aprobó la cotización</span>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="fas fa-handshake mr-2"></i>
+                        Cerrar Venta
+                    </button>
+                    <button class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-eye mr-2"></i>
+                        Ver
+                    </button>
+                    <button class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Cotización 3 -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+        <div class="p-6">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex-1">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <h3 class="text-lg font-bold text-gray-900">Cotización #COT-2024-013</h3>
+                        <span class="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-semibold rounded-full">
+                            Pendiente
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-600">Cliente: <span class="font-medium text-gray-900">Luis Fernández</span></p>
+                    <p class="text-xs text-gray-500 mt-1">Enviada hace 2 días</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-2xl font-bold text-blue-600">$24,800</p>
+                    <p class="text-xs text-gray-500 mt-1">Quantum Ion Pro</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 pb-4 border-b border-gray-200">
+                <div>
+                    <p class="text-xs text-gray-500 mb-1">Vehículo</p>
+                    <p class="text-sm font-medium text-gray-900">Quantum E-4</p>
+                    <p class="text-xs text-gray-600">Sedán • CVT • 2024</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 mb-1">Financiamiento</p>
+                    <p class="text-sm font-medium text-gray-900">36 meses</p>
+                    <p class="text-xs text-gray-600">Enganche: $5,500 (22%)</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 mb-1">Mensualidad</p>
+                    <p class="text-sm font-medium text-green-600">$685/mes</p>
+                    <p class="text-xs text-gray-600">Tasa: 9.2% anual</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4 text-sm text-gray-600">
+                    <div class="flex items-center">
+                        <i class="fas fa-user-tie text-gray-400 mr-2"></i>
+                        <span>Asesor: Tú</span>
+                    </div>
+                    <div class="flex items-center text-amber-600">
+                        <i class="fas fa-clock text-amber-500 mr-2"></i>
+                        <span>Esperando respuesta del cliente</span>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-phone mr-2"></i>
+                        Hacer seguimiento
+                    </button>
+                    <button class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-eye mr-2"></i>
+                        Ver
+                    </button>
+                    <button class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Cotización 4 -->
+    <div class="bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow opacity-75">
+        <div class="p-6">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex-1">
+                    <div class="flex items-center space-x-3 mb-2">
+                        <h3 class="text-lg font-bold text-gray-900">Cotización #COT-2024-012</h3>
+                        <span class="px-3 py-1 bg-red-100 text-red-800 text-xs font-semibold rounded-full">
+                            <i class="fas fa-times-circle mr-1"></i>
+                            Rechazada
+                        </span>
+                    </div>
+                    <p class="text-sm text-gray-600">Cliente: <span class="font-medium text-gray-900">Pedro Castillo</span></p>
+                    <p class="text-xs text-gray-500 mt-1">Rechazada hace 3 días</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-2xl font-bold text-gray-400">$42,000</p>
+                    <p class="text-xs text-gray-500 mt-1">Quantum Nexus Plus</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 pb-4 border-b border-gray-200">
+                <div>
+                    <p class="text-xs text-gray-500 mb-1">Vehículo</p>
+                    <p class="text-sm font-medium text-gray-900">Quantum Nexus Plus</p>
+                    <p class="text-xs text-gray-600">SUV • Automático • 2024</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 mb-1">Financiamiento</p>
+                    <p class="text-sm font-medium text-gray-900">72 meses</p>
+                    <p class="text-xs text-gray-600">Enganche: $10,000 (24%)</p>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 mb-1">Mensualidad</p>
+                    <p class="text-sm font-medium text-gray-600">$725/mes</p>
+                    <p class="text-xs text-gray-600">Tasa: 8.9% anual</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-4 text-sm text-gray-600">
+                    <div class="flex items-center">
+                        <i class="fas fa-user-tie text-gray-400 mr-2"></i>
+                        <span>Asesor: Tú</span>
+                    </div>
+                    <div class="flex items-center text-red-600">
+                        <i class="fas fa-comment-dots text-red-500 mr-2"></i>
+                        <span>Motivo: "Precio fuera de presupuesto"</span>
+                    </div>
+                </div>
+                <div class="flex space-x-2">
+                    <button class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+                        <i class="fas fa-redo mr-2"></i>
+                        Nueva propuesta
+                    </button>
+                    <button class="px-4 py-2 bg-gray-100 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-200 transition-colors">
+                        <i class="fas fa-eye mr-2"></i>
+                        Ver
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

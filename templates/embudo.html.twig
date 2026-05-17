@@ -1,0 +1,310 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Embudo de Ventas - AutoSales Pro{% endblock %}
+{% block page_title %}Embudo de Ventas{% endblock %}
+{% block page_subtitle %}Pipeline de oportunidades{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .kanban-column {
+        min-height: 500px;
+        background: #f8fafc;
+    }
+    .kanban-card {
+        cursor: move;
+        transition: all 0.2s;
+    }
+    .kanban-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<!-- Estadísticas del embudo -->
+<div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+        <p class="text-sm text-blue-700 font-medium">Nuevo Lead</p>
+        <p class="text-2xl font-bold text-blue-900 mt-1">15</p>
+        <p class="text-xs text-blue-600 mt-1">$375K valor total</p>
+    </div>
+    
+    <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+        <p class="text-sm text-indigo-700 font-medium">Contactado</p>
+        <p class="text-2xl font-bold text-indigo-900 mt-1">12</p>
+        <p class="text-xs text-indigo-600 mt-1">$310K valor total</p>
+    </div>
+    
+    <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+        <p class="text-sm text-purple-700 font-medium">Test Drive</p>
+        <p class="text-2xl font-bold text-purple-900 mt-1">8</p>
+        <p class="text-xs text-purple-600 mt-1">$215K valor total</p>
+    </div>
+    
+    <div class="bg-amber-50 border border-amber-200 rounded-lg p-4">
+        <p class="text-sm text-amber-700 font-medium">Negociación</p>
+        <p class="text-2xl font-bold text-amber-900 mt-1">5</p>
+        <p class="text-xs text-amber-600 mt-1">$140K valor total</p>
+    </div>
+    
+    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+        <p class="text-sm text-green-700 font-medium">Ganado</p>
+        <p class="text-2xl font-bold text-green-900 mt-1">3</p>
+        <p class="text-xs text-green-600 mt-1">$85K valor total</p>
+    </div>
+</div>
+
+<!-- Tablero Kanban -->
+<div class="bg-white rounded-lg shadow-sm p-6">
+    <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-bold text-gray-900">Pipeline de Oportunidades</h3>
+        <button class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors">
+            <i class="fas fa-plus mr-2"></i>
+            Nuevo Lead
+        </button>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 overflow-x-auto">
+        <!-- Columna: Nuevo Lead -->
+        <div class="kanban-column rounded-lg p-3">
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="text-sm font-bold text-gray-700">Nuevo Lead</h4>
+                <span class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded-full">15</span>
+            </div>
+            
+            <div class="space-y-3">
+                <div class="kanban-card bg-white rounded-lg p-4 border border-gray-200">
+                    <div class="flex items-start justify-between mb-2">
+                        <h5 class="text-sm font-semibold text-gray-900">Roberto Silva</h5>
+                        <span class="text-xs text-gray-500">2h</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2">Interesado en SUV eléctrico</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-medium text-blue-600">$32,500</span>
+                        <div class="flex space-x-1">
+                            <i class="fas fa-phone text-xs text-gray-400"></i>
+                            <i class="fas fa-envelope text-xs text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="kanban-card bg-white rounded-lg p-4 border border-gray-200">
+                    <div class="flex items-start justify-between mb-2">
+                        <h5 class="text-sm font-semibold text-gray-900">Patricia Morales</h5>
+                        <span class="text-xs text-gray-500">5h</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2">Busca pickup trabajo</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-medium text-blue-600">$28,000</span>
+                        <div class="flex space-x-1">
+                            <i class="fab fa-whatsapp text-xs text-green-500"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="kanban-card bg-white rounded-lg p-4 border border-gray-200">
+                    <div class="flex items-start justify-between mb-2">
+                        <h5 class="text-sm font-semibold text-gray-900">Diego Vargas</h5>
+                        <span class="text-xs text-gray-500">1d</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2">Quantum</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-medium text-blue-600">$22,000</span>
+                        <div class="flex space-x-1">
+                            <i class="fas fa-phone text-xs text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Columna: Contactado -->
+        <div class="kanban-column rounded-lg p-3">
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="text-sm font-bold text-gray-700">Contactado</h4>
+                <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full">12</span>
+            </div>
+            
+            <div class="space-y-3">
+                <div class="kanban-card bg-white rounded-lg p-4 border border-gray-200">
+                    <div class="flex items-start justify-between mb-2">
+                        <h5 class="text-sm font-semibold text-gray-900">María González</h5>
+                        <span class="text-xs text-gray-500">3h</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2">Quantum</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-medium text-indigo-600">$26,500</span>
+                        <div class="flex space-x-1">
+                            <i class="fab fa-whatsapp text-xs text-green-500"></i>
+                            <i class="fas fa-envelope text-xs text-gray-400"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 pt-2 border-t border-gray-100">
+                        <p class="text-xs text-gray-500">
+                            <i class="fas fa-clock text-xs mr-1"></i>
+                            Llamar hoy 14:00
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="kanban-card bg-white rounded-lg p-4 border border-gray-200">
+                    <div class="flex items-start justify-between mb-2">
+                        <h5 class="text-sm font-semibold text-gray-900">Jorge Ramírez</h5>
+                        <span class="text-xs text-gray-500">1d</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2">Quantum</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-medium text-indigo-600">$31,000</span>
+                        <div class="flex space-x-1">
+                            <i class="fas fa-phone text-xs text-green-500"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Columna: Test Drive -->
+        <div class="kanban-column rounded-lg p-3">
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="text-sm font-bold text-gray-700">Test Drive</h4>
+                <span class="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">8</span>
+            </div>
+            
+            <div class="space-y-3">
+                <div class="kanban-card bg-white rounded-lg p-4 border border-gray-200">
+                    <div class="flex items-start justify-between mb-2">
+                        <h5 class="text-sm font-semibold text-gray-900">Luis Fernández</h5>
+                        <span class="text-xs text-gray-500">2d</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2">Quantum</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-medium text-purple-600">$24,800</span>
+                        <div class="flex space-x-1">
+                            <i class="fas fa-road text-xs text-purple-500"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 pt-2 border-t border-gray-100">
+                        <p class="text-xs text-purple-600 font-medium">
+                            <i class="fas fa-calendar text-xs mr-1"></i>
+                            Mañana 10:00 AM
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="kanban-card bg-white rounded-lg p-4 border border-gray-200">
+                    <div class="flex items-start justify-between mb-2">
+                        <h5 class="text-sm font-semibold text-gray-900">Sandra López</h5>
+                        <span class="text-xs text-gray-500">3d</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2">Quantum</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-medium text-purple-600">$33,500</span>
+                        <div class="flex space-x-1">
+                            <i class="fas fa-check-circle text-xs text-green-500"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 pt-2 border-t border-gray-100">
+                        <p class="text-xs text-gray-500">
+                            <i class="fas fa-check text-xs mr-1"></i>
+                            Test drive completado
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Columna: Negociación -->
+        <div class="kanban-column rounded-lg p-3">
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="text-sm font-bold text-gray-700">Negociación</h4>
+                <span class="text-xs bg-amber-100 text-amber-700 px-2 py-1 rounded-full">5</span>
+            </div>
+            
+            <div class="space-y-3">
+                <div class="kanban-card bg-white rounded-lg p-4 border border-gray-200">
+                    <div class="flex items-start justify-between mb-2">
+                        <h5 class="text-sm font-semibold text-gray-900">Ana Martínez</h5>
+                        <span class="text-xs text-gray-500">4d</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2">Quantum</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-medium text-amber-600">$29,200</span>
+                        <div class="flex space-x-1">
+                            <i class="fas fa-file-invoice-dollar text-xs text-amber-500"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 pt-2 border-t border-gray-100">
+                        <p class="text-xs text-amber-600 font-medium">
+                            <i class="fas fa-percent text-xs mr-1"></i>
+                            Propuesta: 85% probabilidad
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="kanban-card bg-white rounded-lg p-4 border border-gray-200">
+                    <div class="flex items-start justify-between mb-2">
+                        <h5 class="text-sm font-semibold text-gray-900">Pedro Castillo</h5>
+                        <span class="text-xs text-gray-500">5d</span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2">Quantum</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-medium text-amber-600">$42,000</span>
+                        <div class="flex space-x-1">
+                            <i class="fas fa-handshake text-xs text-amber-500"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Columna: Ganado -->
+        <div class="kanban-column rounded-lg p-3">
+            <div class="flex items-center justify-between mb-4">
+                <h4 class="text-sm font-bold text-gray-700">Ganado</h4>
+                <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">3</span>
+            </div>
+            
+            <div class="space-y-3">
+                <div class="kanban-card bg-white rounded-lg p-4 border border-green-200 bg-green-50">
+                    <div class="flex items-start justify-between mb-2">
+                        <h5 class="text-sm font-semibold text-gray-900">Carlos Pérez</h5>
+                        <span class="text-xs text-green-600">
+                            <i class="fas fa-check-circle"></i> Hoy
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2">Quantum</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-green-600">$25,500</span>
+                        <div class="flex space-x-1">
+                            <i class="fas fa-trophy text-xs text-yellow-500"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 pt-2 border-t border-green-200">
+                        <p class="text-xs text-green-700 font-medium">
+                            <i class="fas fa-dollar-sign text-xs mr-1"></i>
+                            Comisión: $1,275
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="kanban-card bg-white rounded-lg p-4 border border-green-200 bg-green-50">
+                    <div class="flex items-start justify-between mb-2">
+                        <h5 class="text-sm font-semibold text-gray-900">Lucía Herrera</h5>
+                        <span class="text-xs text-green-600">
+                            <i class="fas fa-check-circle"></i> Ayer
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-600 mb-2">Quantum</p>
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold text-green-600">$30,000</span>
+                        <div class="flex space-x-1">
+                            <i class="fas fa-trophy text-xs text-yellow-500"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

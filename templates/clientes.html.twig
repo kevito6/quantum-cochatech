@@ -1,0 +1,265 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Usuarios{% endblock %}
+
+{% block page_title %}Gestión de Usuarios{% endblock %}
+{% block page_subtitle %}Administración de accesos y permisos{% endblock %}
+
+{% block body %}
+
+{# ── Stats rápidos ─────────────────────────────────────── #}
+<div class="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
+    {% set user_stats = [
+        {label:'Usuarios Totales', val:12, icon:'fas fa-users',        bg:'bg-blue-100',   color:'text-blue-600'  },
+        {label:'Activos',          val:10, icon:'fas fa-user-check',    bg:'bg-green-100',  color:'text-green-600' },
+        {label:'Inactivos',        val:2,  icon:'fas fa-user-times',    bg:'bg-red-100',    color:'text-red-500'   },
+        {label:'Administradores',  val:2,  icon:'fas fa-user-shield',   bg:'bg-purple-100', color:'text-purple-600'},
+    ] %}
+    {% for s in user_stats %}
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-5 flex items-center gap-4">
+        <div class="w-11 h-11 {{ s.bg }} rounded-lg flex items-center justify-center shrink-0">
+            <i class="{{ s.icon }} {{ s.color }} text-lg"></i>
+        </div>
+        <div>
+            <p class="text-xs text-gray-500">{{ s.label }}</p>
+            <p class="text-2xl font-bold text-gray-900">{{ s.val }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{# ── Barra de acciones ─────────────────────────────────── #}
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4 mb-5 flex flex-wrap items-end gap-3">
+    <div class="flex-1 min-w-44">
+        <label class="block text-xs font-semibold text-gray-600 mb-1.5">Buscar usuario</label>
+        <div class="relative">
+            <input type="text" id="userSearch" placeholder="Nombre, email o rol..."
+                   class="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+        </div>
+    </div>
+    <div>
+        <label class="block text-xs font-semibold text-gray-600 mb-1.5">Rol</label>
+        <select id="userRol" class="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">Todos</option>
+            <option>Administrador</option><option>Asesor de Ventas</option>
+            <option>Gerente</option><option>Soporte</option>
+        </select>
+    </div>
+    <div>
+        <label class="block text-xs font-semibold text-gray-600 mb-1.5">Estado</label>
+        <select id="userEstado" class="px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+            <option value="">Todos</option>
+            <option>Activo</option><option>Inactivo</option>
+        </select>
+    </div>
+    <div class="ml-auto">
+        <button onclick="abrirModalUser()"
+                class="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
+            <i class="fas fa-user-plus"></i>Nuevo Usuario
+        </button>
+    </div>
+</div>
+
+{# ── Tabla de usuarios ─────────────────────────────────── #}
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-100">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Usuario</th>
+                    <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Rol</th>
+                    <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Ventas del mes</th>
+                    <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Último acceso</th>
+                    <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Estado</th>
+                    <th class="px-5 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="userTableBody" class="bg-white divide-y divide-gray-100"></tbody>
+        </table>
+    </div>
+</div>
+
+{# ── Modal Nuevo/Editar usuario ────────────────────────── #}
+<div id="modalUser" class="fixed inset-0 bg-black/50 hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-xl shadow-2xl">
+        <div class="flex justify-between items-center px-6 py-4 border-b border-gray-100">
+            <h3 class="text-lg font-bold text-gray-900" id="modalUserTitle">Nuevo Usuario</h3>
+            <button onclick="cerrarModalUser()" class="text-gray-400 hover:text-gray-600"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="px-6 py-5 space-y-4">
+            <div class="flex justify-center">
+                <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center text-white text-2xl font-bold cursor-pointer hover:opacity-90 relative group">
+                    <span id="avatarPreview">?</span>
+                    <div class="absolute inset-0 bg-black/20 rounded-full opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                        <i class="fas fa-camera text-white text-sm"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Nombre</label>
+                    <input type="text" id="uNombre" placeholder="Juan"
+                           class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Apellido</label>
+                    <input type="text" id="uApellido" placeholder="García"
+                           class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-1">Correo electrónico</label>
+                <input type="email" id="uEmail" placeholder="juan@autosales.com"
+                       class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Rol</label>
+                    <select id="uRol" class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option>Asesor de Ventas</option>
+                        <option>Gerente</option>
+                        <option>Administrador</option>
+                        <option>Soporte</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Teléfono</label>
+                    <input type="text" placeholder="+591 7XXXXXXX"
+                           class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Contraseña</label>
+                    <input type="password" placeholder="••••••••"
+                           class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-gray-600 mb-1">Confirmar contraseña</label>
+                    <input type="password" placeholder="••••••••"
+                           class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </div>
+            <!-- Permisos -->
+            <div>
+                <label class="block text-xs font-semibold text-gray-600 mb-2">Permisos adicionales</label>
+                <div class="grid grid-cols-2 gap-2">
+                    {% for perm in ['Ver reportes', 'Exportar datos', 'Gestionar clientes', 'Ver comisiones', 'Editar inventario', 'Administrar usuarios'] %}
+                    <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+                        <input type="checkbox" class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                        {{ perm }}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="flex justify-end gap-3 px-6 py-4 border-t border-gray-100">
+            <button onclick="cerrarModalUser()" class="px-4 py-2 border border-gray-200 rounded-lg text-sm hover:bg-gray-50 transition-colors">Cancelar</button>
+            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg text-sm hover:bg-blue-700 transition-colors">Guardar Usuario</button>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+const usuarios = [
+    { id:1, nombre:'Ana García',     email:'ana@autosales.com',     rol:'Gerente',          ventas:58, acceso:'Hoy 09:24',    estado:'Activo',   avatar:'AG', color:'from-amber-400 to-orange-500'  },
+    { id:2, nombre:'Juan Pérez',     email:'juan@autosales.com',    rol:'Asesor de Ventas', ventas:45, acceso:'Hoy 08:51',    estado:'Activo',   avatar:'JP', color:'from-blue-400 to-blue-600'     },
+    { id:3, nombre:'Luis Torres',    email:'luis@autosales.com',    rol:'Asesor de Ventas', ventas:39, acceso:'Ayer 17:30',   estado:'Activo',   avatar:'LT', color:'from-purple-400 to-purple-600' },
+    { id:4, nombre:'Carmen Ruiz',    email:'carmen@autosales.com',  rol:'Asesor de Ventas', ventas:28, acceso:'Hoy 10:05',    estado:'Activo',   avatar:'CR', color:'from-pink-400 to-rose-500'     },
+    { id:5, nombre:'Diego Flores',   email:'diego@autosales.com',   rol:'Soporte',          ventas:0,  acceso:'Hace 3 días',  estado:'Activo',   avatar:'DF', color:'from-teal-400 to-teal-600'     },
+    { id:6, nombre:'Sofía Morales',  email:'sofia@autosales.com',   rol:'Administrador',    ventas:12, acceso:'Hoy 11:20',    estado:'Activo',   avatar:'SM', color:'from-indigo-400 to-indigo-600' },
+    { id:7, nombre:'Marco Quispe',   email:'marco@autosales.com',   rol:'Asesor de Ventas', ventas:0,  acceso:'Hace 2 sem.',  estado:'Inactivo', avatar:'MQ', color:'from-gray-400 to-gray-500'     },
+    { id:8, nombre:'Roberto Admin',  email:'admin@autosales.com',   rol:'Administrador',    ventas:0,  acceso:'Hoy 07:00',    estado:'Activo',   avatar:'RA', color:'from-red-400 to-red-600'       },
+];
+
+const rolBadge = {
+    'Administrador':   'bg-purple-100 text-purple-700',
+    'Gerente':         'bg-amber-100 text-amber-700',
+    'Asesor de Ventas':'bg-blue-100 text-blue-700',
+    'Soporte':         'bg-gray-100 text-gray-600',
+};
+
+let filtered = [...usuarios];
+
+function renderUsers() {
+    const tbody = document.getElementById('userTableBody');
+    tbody.innerHTML = filtered.map(u => `
+        <tr class="hover:bg-gray-50 transition-colors">
+            <td class="px-5 py-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-full bg-gradient-to-br ${u.color} flex items-center justify-center text-white text-sm font-bold shrink-0">${u.avatar}</div>
+                    <div>
+                        <p class="font-semibold text-gray-900 text-sm">${u.nombre}</p>
+                        <p class="text-xs text-gray-400">${u.email}</p>
+                    </div>
+                </div>
+            </td>
+            <td class="px-5 py-3">
+                <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold ${rolBadge[u.rol] || 'bg-gray-100 text-gray-600'}">${u.rol}</span>
+            </td>
+            <td class="px-5 py-3 text-sm text-gray-600">
+                ${u.ventas > 0 ? `<span class="font-semibold text-gray-900">${u.ventas}</span> <span class="text-gray-400">unidades</span>` : '<span class="text-gray-400">—</span>'}
+            </td>
+            <td class="px-5 py-3 text-sm text-gray-500">${u.acceso}</td>
+            <td class="px-5 py-3">
+                <div class="flex items-center gap-2">
+                    <div class="w-2 h-2 rounded-full ${u.estado==='Activo' ? 'bg-green-500' : 'bg-gray-300'}"></div>
+                    <span class="text-sm ${u.estado==='Activo' ? 'text-green-700' : 'text-gray-400'}">${u.estado}</span>
+                </div>
+            </td>
+            <td class="px-5 py-3">
+                <button onclick="abrirModalUser(${u.id})" class="text-blue-500 hover:text-blue-700 text-sm mr-2 transition-colors" title="Editar"><i class="fas fa-edit"></i></button>
+                <button class="text-gray-400 hover:text-gray-600 text-sm mr-2 transition-colors" title="${u.estado==='Activo' ? 'Desactivar':'Activar'}">
+                    <i class="fas fa-${u.estado==='Activo' ? 'ban':'check-circle'}"></i>
+                </button>
+                <button class="text-red-400 hover:text-red-600 text-sm transition-colors" title="Eliminar"><i class="fas fa-trash-alt"></i></button>
+            </td>
+        </tr>`).join('') || `<tr><td colspan="6" class="px-5 py-10 text-center text-gray-400 text-sm">Sin usuarios</td></tr>`;
+}
+
+function filtrar() {
+    const q = document.getElementById('userSearch').value.toLowerCase();
+    const r = document.getElementById('userRol').value;
+    const e = document.getElementById('userEstado').value;
+    filtered = usuarios.filter(u =>
+        (!q || `${u.nombre} ${u.email} ${u.rol}`.toLowerCase().includes(q)) &&
+        (!r || u.rol === r) &&
+        (!e || u.estado === e));
+    renderUsers();
+}
+
+['userSearch','userRol','userEstado'].forEach(id =>
+    document.getElementById(id).addEventListener('input', filtrar));
+
+function abrirModalUser(id = null) {
+    document.getElementById('modalUser').classList.remove('hidden');
+    if (id) {
+        const u = usuarios.find(x => x.id === id);
+        document.getElementById('modalUserTitle').textContent = 'Editar Usuario';
+        document.getElementById('avatarPreview').textContent = u.avatar;
+        document.getElementById('uNombre').value  = u.nombre.split(' ')[0];
+        document.getElementById('uApellido').value = u.nombre.split(' ')[1] || '';
+        document.getElementById('uEmail').value   = u.email;
+        document.getElementById('uRol').value     = u.rol;
+    } else {
+        document.getElementById('modalUserTitle').textContent = 'Nuevo Usuario';
+        document.getElementById('avatarPreview').textContent = '?';
+    }
+}
+function cerrarModalUser() { document.getElementById('modalUser').classList.add('hidden'); }
+document.getElementById('modalUser').addEventListener('click', e => { if (e.target === e.currentTarget) cerrarModalUser(); });
+
+// Previsualización de iniciales
+['uNombre','uApellido'].forEach(id => document.getElementById(id).addEventListener('input', () => {
+    const n = document.getElementById('uNombre').value.charAt(0).toUpperCase();
+    const a = document.getElementById('uApellido').value.charAt(0).toUpperCase();
+    document.getElementById('avatarPreview').textContent = (n + a) || '?';
+}));
+
+renderUsers();
+</script>
+{% endblock %}
